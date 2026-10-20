@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Проверка знаний: Python</title>
+<style>
+:root{
+  --ground:#f1f4f2; --surface:#ffffff; --ink:#18211d; --muted:#5a6a63;
+  --line:#d4ddd8; --accent:#1f6f54; --accent-ink:#ffffff; --accent-soft:#e1efe8;
+  --code-bg:#1b2420; --code-ink:#e2ece6; --kw:#8fd1b0; --str:#e6c37a;
+  --warn:#b3261e; --warn-soft:#fbe9e7;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --ground:#121816; --surface:#1a2320; --ink:#e5ede9; --muted:#95a69e;
+    --line:#2d3a35; --accent:#4fb58c; --accent-ink:#0d1512; --accent-soft:#1f3a30;
+    --code-bg:#0c1210; --warn:#ff8a7e; --warn-soft:#3a1e1b;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font:16px/1.5 "Segoe UI",Roboto,system-ui,-apple-system,sans-serif;padding-inline:16px;padding-block:0 48px}
+.wrap{max-width:720px;margin:0 auto}
+h1{font-size:26px;line-height:1.2;margin:32px 0 6px;text-wrap:balance}
+.lead{color:var(--muted);margin:0 0 24px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px}
+label{display:block;font-weight:600;margin-bottom:6px}
+.field{display:grid;gap:6px;margin-bottom:18px}
+input[type=text],textarea{width:100%;font:inherit;color:var(--ink);background:var(--surface);
+  border:1px solid var(--line);border-radius:8px;padding:11px 12px}
+input:focus,textarea:focus,button:focus-visible{outline:3px solid var(--accent-soft);border-color:var(--accent);outline-offset:0}
+.seg{display:flex;gap:8px}
+.seg button{flex:1}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);padding:11px 16px;font-weight:600}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button[aria-pressed=true]{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.rules{margin:18px 0 0;padding-left:20px;color:var(--muted);font-size:14px}
+.err{color:var(--warn);font-size:14px;min-height:1.5em;margin:8px 0 0}
+
+/* шапка теста */
+.top{position:sticky;top:0;z-index:5;background:var(--ground);padding-block:12px;
+  border-bottom:1px solid var(--line);margin-bottom:20px}
+.top-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.who{font-size:14px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.timer{font:700 20px/1 Consolas,"Cascadia Mono",monospace;font-variant-numeric:tabular-nums;
+  padding:6px 10px;border-radius:6px;background:var(--surface);border:1px solid var(--line)}
+.timer.low{color:var(--warn);background:var(--warn-soft);border-color:var(--warn)}
+.dots{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.dsec{flex-basis:100%;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.dsec:first-child{margin-top:0}
+.dot{width:30px;height:30px;padding:0;font-size:12px;border-radius:6px;font-weight:600}
+.dot.done{background:var(--accent-soft);border-color:var(--accent)}
+.dot.cur{outline:2px solid var(--ink);outline-offset:1px}
+.dot.code{font-style:italic}
+
+.toast{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--accent-soft);
+  border:1px solid var(--accent);font-weight:600;font-size:14px}
+.qnum{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.qtext{font-size:19px;font-weight:600;margin:0 0 14px;text-wrap:pretty}
+pre{background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:14px 16px;margin:0 0 16px;
+  font:15px/1.55 Consolas,"Cascadia Mono","Roboto Mono",monospace;overflow-x:auto}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;font-weight:500;display:flex;gap:10px;align-items:flex-start}
+.opt .mono{font-family:Consolas,"Cascadia Mono","Roboto Mono",monospace}
+.opt .box{flex:none;width:18px;height:18px;border-radius:50%;border:2px solid var(--line);margin-top:2px}
+.opt[aria-pressed=true] .box{border:5px solid var(--accent)}
+.answer{font-family:Consolas,"Cascadia Mono","Roboto Mono",monospace}
+textarea.answer{min-height:220px;line-height:1.5;resize:vertical;tab-size:4}
+.hint{font-size:13px;color:var(--muted);margin:6px 0 0}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:20px}
+.nav button{flex:1}
+.finish{margin-top:12px;width:100%}
+.big{font-size:44px;margin:40px 0 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <section id="start">
+    <h1>Проверка знаний: Python</h1>
+    <p class="lead">Короткий тест: что выведет программа, где ошибка и несколько задач на написание кода.</p>
+    <div class="panel">
+      <div class="field">
+        <label for="name">Фамилия и имя</label>
+        <input type="text" id="name" autocomplete="name" placeholder="Иванов Иван" maxlength="80">
+      </div>
+      <div class="field">
+        <label id="grade-l">Класс</label>
+        <div class="seg" role="group" aria-labelledby="grade-l">
+          <button type="button" id="g10" data-grade="10" aria-pressed="false">10 класс</button>
+          <button type="button" id="g11" data-grade="11" aria-pressed="false">11 класс</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="group">Группа или буква класса <span style="font-weight:400;color:var(--muted)">(необязательно)</span></label>
+        <input type="text" id="group" placeholder="например, 10А" maxlength="40">
+      </div>
+      <button class="primary" id="go" style="width:100%">Начать тест</button>
+      <p class="err" id="start-err"></p>
+      <ul class="rules">
+        <li><b id="count">30</b> заданий: сначала лёгкие (1 балл), потом средние (2 балла) и сложные (3 балла).</li>
+        <li>Время ограничено: <b id="mins">30</b> минут. Когда оно выйдет, ответы отправятся сами.</li>
+        <li>Между вопросами можно переходить и возвращаться.</li>
+        <li>Не закрывайте вкладку и не переключайтесь на другие: учитель видит уходы со страницы.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="test" hidden>
+    <div class="top">
+      <div class="top-row">
+        <div class="who" id="who"></div>
+        <div class="timer" id="timer" aria-live="off">25:00</div>
+      </div>
+      <div class="dots" id="dots"></div>
+      <div class="toast" id="toast" role="status" hidden></div>
+    </div>
+    <div class="panel">
+      <p class="qnum" id="qnum"></p>
+      <p class="qtext" id="qtext"></p>
+      <pre id="qcode" hidden></pre>
+      <div id="qbody"></div>
+      <div class="nav">
+        <button id="prev">← Назад</button>
+        <button id="next" class="primary">Дальше →</button>
+      </div>
+    </div>
+    <button class="finish" id="finish">Завершить и отправить</button>
+    <p class="err" id="send-err"></p>
+  </section>
+
+  <section id="done" hidden>
+    <p class="big">✓</p>
+    <h1>Ответы отправлены</h1>
+    <p class="lead" id="done-text">Можно закрыть страницу. Результаты — у учителя.</p>
+    <button id="again">Тест для следующего ученика на этом устройстве</button>
+  </section>
+
+</div>
+<script>
+const KEY = 'pytest-state-v3';
+const $ = id => document.getElementById(id);
+let S = null;            // состояние попытки
+let grade = null;
+let tick = null;
+let sending = false;
+
+function save(){ dirty = true; try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null; } }
+function show(id){ for (const s of ['start','test','done']) $(s).hidden = s !== id; window.scrollTo(0,0); }
+
+fetch('/api/config').then(r=>r.json()).then(c=>{ $('mins').textContent = c.minutes; $('count').textContent = c.count; }).catch(()=>{});
+
+for (const b of document.querySelectorAll('[data-grade]')) {
+  b.onclick = () => {
+    grade = +b.dataset.grade;
+    for (const x of document.querySelectorAll('[data-grade]')) x.setAttribute('aria-pressed', x === b);
+  };
+}
+
+$('go').onclick = async () => {
+  const name = $('name').value.trim();
+  $('start-err').textContent = '';
+  if (name.split(/\s+/).length < 2) { $('start-err').textContent = 'Введите фамилию и имя через пробел.'; return; }
+  if (!grade) { $('start-err').textContent = 'Выберите класс.'; return; }
+  $('go').disabled = true;
+  try {
+    const r = await fetch('/api/questions');
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error);
+    S = { attempt: Date.now().toString(36) + Math.random().toString(36).slice(2,8),
+          name, grade, group: $('group').value.trim(), questions: d.questions,
+          minutes: d.minutes, startedAt: Date.now(), answers: {}, cur: 0,
+          tabLeaves: 0, finished: false };
+    save();
+    startTest();
+  } catch (e) {
+    $('start-err').textContent = 'Не удалось загрузить вопросы. Проверьте, что телефон подключён к той же Wi-Fi сети, и попробуйте ещё раз.';
+  } finally { $('go').disabled = false; }
+};
+
+function startTest(){
+  show('test');
+  $('who').textContent = `${S.name} · ${S.grade} класс`;
+  renderDots(); renderQ();
+  clearInterval(tick); tick = setInterval(updateTimer, 500); updateTimer();
+}
+
+function left(){ return S.startedAt + S.minutes*60000 - Date.now(); }
+let lastSync = 0, finishing = false;
+
+// учитель может добавить время — сверяемся с сервером
+async function syncTime(){
+  lastSync = Date.now();
+  try {
+    const c = await (await fetch('/api/config', {cache:'no-store'})).json();
+    if (S && !S.finished && c.minutes !== S.minutes) {
+      const more = c.minutes > S.minutes;
+      S.minutes = c.minutes; save();
+      if (more) toast('Учитель добавил время. Теперь на тест ' + c.minutes + ' мин.');
+    }
+  } catch (e) { /* нет связи — продолжаем со старым временем */ }
+}
+
+// черновик ответов — учитель видит его в админке, пока ученик решает
+let dirty = true, lastProgress = 0, progressBusy = false;
+function payload(extra){
+  return JSON.stringify(Object.assign({ attempt:S.attempt, name:S.name, grade:S.grade, group:S.group,
+    answers:S.answers, startedAt:S.startedAt, tabLeaves:S.tabLeaves }, extra));
+}
+async function sendProgress(){
+  if (progressBusy || !S || S.finished) return;
+  progressBusy = true; lastProgress = Date.now(); dirty = false;
+  try {
+    await fetch('/api/progress', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: payload({ curId: S.questions[S.cur].id }) });
+  } catch (e) { dirty = true; }
+  progressBusy = false;
+}
+
+function toast(text){
+  const t = $('toast'); t.textContent = text; t.hidden = false;
+  clearTimeout(toast.h); toast.h = setTimeout(() => { t.hidden = true; }, 6000);
+}
+
+async function updateTimer(){
+  if (Date.now() - lastSync > 10000) syncTime();
+  const since = Date.now() - lastProgress;
+  if ((dirty && since > 4000) || since > 20000) sendProgress();
+  const ms = Math.max(0, left());
+  const m = Math.floor(ms/60000), s = Math.floor(ms/1000)%60;
+  $('timer').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  $('timer').classList.toggle('low', ms < 3*60000);
+  if (ms <= 0 && !finishing) {
+    finishing = true;
+    await syncTime();              // вдруг время только что добавили
+    if (left() <= 0) { clearInterval(tick); submit(true); }
+    finishing = false;
+  }
+}
+
+function answered(q){ const a = S.answers[q.id]; return a != null && String(a).trim() !== ''; }
+
+function renderDots(){
+  const box = $('dots'); box.textContent = '';
+  S.questions.forEach((q,i) => {
+    if (i === 0 || q.section !== S.questions[i-1].section) {
+      const t = document.createElement('span');
+      t.className = 'dsec'; t.textContent = q.section;
+      box.appendChild(t);
+    }
+    const b = document.createElement('button');
+    b.className = 'dot' + (answered(q)?' done':'') + (i===S.cur?' cur':'') + (q.type==='code'?' code':'');
+    b.textContent = q.type === 'code' ? '{ }' : i+1;
+    b.title = q.type === 'code' ? 'Задача на код' : 'Вопрос ' + (i+1);
+    b.onclick = () => { S.cur = i; save(); renderQ(); renderDots(); };
+    box.appendChild(b);
+  });
+}
+
+function renderQ(){
+  const q = S.questions[S.cur];
+  const n = S.questions.length;
+  const pts = q.points === 1 ? 'балл' : 'балла';
+  $('qnum').textContent = `${q.section} · ${q.points} ${pts} · Задание ${S.cur+1} из ${n}`;
+  $('qtext').textContent = q.text;
+  $('qcode').hidden = !q.code;
+  $('qcode').textContent = q.code || '';
+  const body = $('qbody'); body.textContent = '';
+  if (q.type === 'choice') {
+    const wrap = document.createElement('div'); wrap.className = 'opts';
+    const mono = q.options.some(o => /[\[\](]|range|O\(/.test(o));
+    for (const o of q.options) {
+      const b = document.createElement('button');
+      b.className = 'opt'; b.setAttribute('aria-pressed', S.answers[q.id] === o);
+      const box = document.createElement('span'); box.className = 'box';
+      const t = document.createElement('span'); t.textContent = o; if (mono) t.className = 'mono';
+      b.append(box, t);
+      b.onclick = () => { S.answers[q.id] = o; save(); renderQ(); renderDots(); };
+      wrap.appendChild(b);
+    }
+    body.appendChild(wrap);
+  } else if (q.type === 'text') {
+    const inp = document.createElement('input');
+    inp.type = 'text'; inp.id = 'ans-' + q.id; inp.className = 'answer';
+    inp.placeholder = 'Ваш ответ'; inp.autocomplete = 'off';
+    inp.setAttribute('autocapitalize','off'); inp.spellcheck = false;
+    inp.value = S.answers[q.id] || '';
+    inp.oninput = () => { S.answers[q.id] = inp.value; save(); renderDotsSoon(); };
+    inp.onkeydown = e => { if (e.key === 'Enter') $('next').click(); };
+    const lab = document.createElement('label'); lab.htmlFor = inp.id; lab.textContent = 'Ответ';
+    body.append(lab, inp);
+  } else {
+    const ta = document.createElement('textarea');
+    ta.id = 'ans-' + q.id; ta.className = 'answer';
+    ta.setAttribute('autocapitalize','off'); ta.spellcheck = false;
+    ta.placeholder = '# напишите код здесь';
+    ta.value = S.answers[q.id] || '';
+    ta.oninput = () => { S.answers[q.id] = ta.value; save(); renderDotsSoon(); };
+    ta.onkeydown = e => {
+      if (e.key === 'Tab') { e.preventDefault(); ta.setRangeText('    ', ta.selectionStart, ta.selectionEnd, 'end'); ta.oninput(); }
+    };
+    const h = document.createElement('p'); h.className = 'hint';
+    h.textContent = 'Отступ — клавиша Tab или 4 пробела. Этот ответ проверит учитель.';
+    body.append(ta, h);
+  }
+  $('prev').disabled = S.cur === 0;
+  $('next').disabled = S.cur === n-1;
+}
+
+let dotsTimer = null;
+function renderDotsSoon(){ clearTimeout(dotsTimer); dotsTimer = setTimeout(renderDots, 300); }
+
+$('prev').onclick = () => { if (S.cur>0){ S.cur--; save(); renderQ(); renderDots(); } };
+$('next').onclick = () => { if (S.cur<S.questions.length-1){ S.cur++; save(); renderQ(); renderDots(); } };
+
+$('finish').onclick = () => {
+  const empty = S.questions.filter(q => !answered(q)).length;
+  const msg = empty ? `Без ответа осталось вопросов: ${empty}. Всё равно отправить?` : 'Отправить ответы? Изменить их будет нельзя.';
+  if (confirm(msg)) submit(false);
+};
+
+async function submit(timeout){
+  if (sending || !S || S.finished) return;
+  sending = true; $('finish').disabled = true; $('send-err').textContent = '';
+  S.submitting = !!timeout; save();          // запомнили: после перезагрузки отправим снова
+  try {
+    const r = await fetch('/api/submit', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: payload({ timeout }) });
+    if (!r.ok) throw new Error();
+    S.finished = true; save(); clearInterval(tick);
+    $('done-text').textContent = timeout
+      ? 'Время вышло, ответы отправлены автоматически. Результаты — у учителя.'
+      : 'Можно закрыть страницу. Результаты — у учителя.';
+    show('done');
+  } catch (e) {
+    $('send-err').textContent = 'Нет связи с сервером. Ответы сохранены на телефоне, повторяем отправку каждые 5 секунд — не закрывайте страницу.';
+    setTimeout(() => submit(timeout), 5000);
+  } finally { sending = false; }
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && S && !S.finished && !$('test').hidden) { S.tabLeaves++; save(); }
+});
+
+$('again').onclick = () => {
+  try{ localStorage.removeItem(KEY); }catch(e){}
+  location.reload();
+};
+
+// восстановление после перезагрузки страницы
+S = load();
+if (S && S.finished) show('done');
+else if (S && S.questions) { startTest(); if (S.submitting !== undefined) submit(S.submitting); }   // таймер сам сверится с сервером и при необходимости отправит ответы
+</script>
+</body>
+</html>

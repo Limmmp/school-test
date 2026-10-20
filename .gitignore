@@ -1,0 +1,33 @@
+
+# --- common (added for GitHub) ---
+node_modules/
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+.venv/
+venv/
+.vercel/
+.expo/
+.dart_tool/
+.idea/
+.vscode/
+*.blend1
+*.bak
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+.claude/settings.local.json
+# heavy media / archives — transfer separately
+*.mov
+*.MOV
+*.mp4
+*.zip
+*.rar
+*.7z
+*.safetensors
+*.ckpt
+results/
+checjk.py
