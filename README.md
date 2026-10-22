@@ -1,5 +1,20 @@
+<div align="center">
+
 # Тест по программированию для класса
 
+**Учитель запускает сервер на ноутбуке, ученики проходят тест с телефонов. Без интернета.**
+
+<img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"> <img src="https://img.shields.io/badge/без_зависимостей-555555?style=flat-square" alt="без зависимостей"> <img src="https://img.shields.io/badge/работает_офлайн-2E7D32?style=flat-square" alt="работает офлайн">
+
+</div>
+
+<table>
+<tr>
+<td align="center" valign="top"><img src="docs/student.jpg" alt="Экран ученика" width="260"></td>
+</tr>
+</table>
+
+<!-- header:end -->
 Локальный сервер для контрольной по Python: учитель запускает его на ноутбуке, ученики открывают ссылку с телефонов или ПК в той же сети. Интернет не нужен, зависимостей нет, только стандартная библиотека Python.
 
 ## Возможности
